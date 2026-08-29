@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { SupportedChain } from './chain.js';
 
-export const AddressSchema = z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address");
+export const AddressSchema = z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid blockchain address");
 export const EnsSchema = z.string().min(3).endsWith(".eth", "Invalid ENS name");
 
 export const GetBalanceInputSchema = z.object({

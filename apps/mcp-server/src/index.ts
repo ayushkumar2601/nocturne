@@ -58,42 +58,42 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "get_balance",
-        description: "Get the Ethereum balance of an address on Sepolia testnet.",
+        description: "Get the balance of an address on Ethereum (Sepolia) or Midnight testnet.",
         inputSchema: zodToJsonSchema(GetBalanceInputSchema),
       },
       {
         name: "get_token_balances",
-        description: "Get ERC20 token balances for an address.",
+        description: "Get ERC20 token balances for an address on Ethereum or Midnight.",
         inputSchema: zodToJsonSchema(GetTokenBalancesInputSchema),
       },
       {
         name: "get_transactions",
-        description: "Get recent transactions for an address.",
+        description: "Get recent transactions for an address on Ethereum or Midnight.",
         inputSchema: zodToJsonSchema(GetTransactionsInputSchema),
       },
       {
         name: "get_wallet_summary",
-        description: "Get a summary of a wallet including balance, token count, and recent activity.",
+        description: "Get a summary of a wallet including balance, token count, and recent activity (Ethereum or Midnight).",
         inputSchema: zodToJsonSchema(GetWalletSummaryInputSchema),
       },
       {
         name: "resolve_ens",
-        description: "Resolve an ENS name to an Ethereum address.",
+        description: "Resolve an ENS name to an address (Ethereum only).",
         inputSchema: zodToJsonSchema(ResolveEnsInputSchema),
       },
       {
         name: "estimate_gas",
-        description: "Estimate gas costs for a transaction.",
+        description: "Estimate gas costs for a transaction on Ethereum or Midnight.",
         inputSchema: zodToJsonSchema(EstimateGasInputSchema),
       },
       {
         name: "simulate_transaction",
-        description: "Simulate a transaction execution on Sepolia without broadcasting.",
+        description: "Simulate a transaction execution on Ethereum (Sepolia) or Midnight without broadcasting.",
         inputSchema: zodToJsonSchema(SimulateTransactionInputSchema),
       },
       {
         name: "create_transaction_draft",
-        description: "Create a draft transaction that requires human approval.",
+        description: "Create a draft transaction on Ethereum or Midnight that requires human approval.",
         inputSchema: zodToJsonSchema(CreateTransactionDraftInputSchema),
       },
       {
@@ -108,7 +108,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "broadcast_transaction",
-        description: "Broadcast a raw signed transaction.",
+        description: "Broadcast a raw signed transaction to Ethereum or Midnight.",
         inputSchema: zodToJsonSchema(BroadcastTransactionInputSchema),
       },
       {
