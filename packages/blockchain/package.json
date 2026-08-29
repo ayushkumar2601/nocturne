@@ -1,0 +1,20 @@
+{
+  "name": "@weth/blockchain",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "WETH Blockchain Layer",
+  "main": "dist/index.js", "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@weth/shared": "workspace:*",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.4.1",
+    "viem": "^2.17.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3"
+  }
+}

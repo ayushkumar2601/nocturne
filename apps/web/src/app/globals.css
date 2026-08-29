@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Linear design language: near-black canvas #010102 as default for all modes */
+  --canvas: #010102;
+  --surface-1: #0f1011;
+  --surface-2: #141516;
+  --surface-3: #18191a;
+  --surface-4: #191a1b;
+  --hairline: #23252a;
+  --hairline-strong: #34343a;
+  --hairline-tertiary: #3e3e44;
+  
+  --primary: #5e6ad2;
+  --primary-hover: #828fff;
+  --primary-focus: #5e69d1;
+  
+  --ink: #f7f8f8;
+  --ink-muted: #d0d6e0;
+  --ink-subtle: #8a8f98;
+  --ink-tertiary: #62666d;
+  /* Ultra-minimalistic $100,000 monochromatic terminal palette (95% mono, 5% accent) */
+  --canvas: #000000;
+  --surface-1: #0a0a0c;
+  --surface-2: #101014;
+  --surface-3: #16161b;
+  --hairline: #1c1c22;
+  --hairline-hover: #2e2e38;
+  
+  /* Monochromatic typography hierarchy */
+  --text-high: #ffffff;
+  --text-mid: #a1a1aa;
+  --text-low: #52525b;
+  
+  /* 5% surgical color accents */
+  --accent: #5e6ad2;
+  --accent-glow: rgba(94, 106, 210, 0.15);
+  --critical: #ef4444;
+  --safe: #10b981;
+}
+
+@layer base {
+  body {
+    background-color: var(--canvas);
+    color: var(--text-high);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+  }
+
+  /* Sleek institutional scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1c1c22;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2e2e38;
+  }
+
+  /* Selection styling */
+  ::selection {
+    background-color: #5e6ad2;
+    color: #ffffff;
+  }
+}
+
+/* Tasteful micro-animations & terminal styling */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom glowing hairline border transition */
+.terminal-card {
+  background-color: var(--surface-1);
+  border: 1px solid var(--hairline);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.terminal-card:hover {
+  border-color: var(--hairline-hover);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+}

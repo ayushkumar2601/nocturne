@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  address   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Future fields
+  isContract Boolean?
+  ensName    String?
+}
+
+model ToolExecution {
+  id        String   @id @default(cuid())
+  toolName  String
+  inputs    Json
+  outputs   Json?
+  status    String   // "SUCCESS", "ERROR"
+  error     String?
+  duration  Int      // in ms
+  createdAt DateTime @default(now())
+}
+
+model CacheEntry {
+  key       String   @id
+  value     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model TransactionDraft {
+  id               String            @id @default(cuid())
+  chainId          Int
+  fromAddress      String
+  toAddress        String
+  value            String
+  data             String?
+  gasEstimate      Json?
+  status           String            // "DRAFT", "SIMULATED", "APPROVED", "REJECTED", "EXECUTED", "FAILED"
+  simulationResult Json?
+  riskLevel        String?           // "LOW", "MEDIUM", "HIGH"
+  policyResult     String?           // "SAFE", "REQUIRES_APPROVAL", "BLOCKED"
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
+  decisions        PolicyDecision[]
+  audits           TransactionAudit[]
+}
+
+model PolicyDecision {
+  id              String           @id @default(cuid())
+  transactionId   String
+  transaction     TransactionDraft @relation(fields: [transactionId], references: [id])
+  result          String
+  reason          String
+  createdAt       DateTime         @default(now())
+}
+
+model TransactionAudit {
+  id              String            @id @default(cuid())
+  transactionId   String?
+  transaction     TransactionDraft? @relation(fields: [transactionId], references: [id])
+  toolName        String
+  requestPayload  Json
+  responsePayload Json?
+  createdAt       DateTime          @default(now())
+}

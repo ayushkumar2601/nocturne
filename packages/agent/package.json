@@ -1,0 +1,24 @@
+{
+  "name": "@weth/agent",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "WETH Guardian Core Intelligence & Reasoning Layer",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@weth/blockchain": "workspace:*",
+    "@weth/shared": "workspace:*",
+    "neo4j-driver": "^5.23.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.2"
+  }
+}

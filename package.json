@@ -1,0 +1,31 @@
+{
+  "name": "weth",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "WETH - Ethereum MCP Infrastructure for AI Agents",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "pnpm --filter @weth/database prisma:generate",
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "lint": "eslint . --ext .ts",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "format": "prettier --write \"**/*.{ts,md,json}\"",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prisma:generate": "pnpm --filter @weth/database prisma:generate",
+    "prisma:migrate": "pnpm --filter @weth/database prisma:migrate"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.2"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@9.5.0"
+}

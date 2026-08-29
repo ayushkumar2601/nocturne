@@ -1,0 +1,343 @@
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { BalanceService, EnsService, TransactionService, TransactionExecutionService } from '@weth/blockchain';
+import { PrismaClient } from '@weth/database';
+import { 
+  GetBalanceInputSchema, 
+  GetTokenBalancesInputSchema, 
+  GetTransactionsInputSchema, 
+  GetWalletSummaryInputSchema, 
+  ResolveEnsInputSchema,
+  EstimateGasInputSchema,
+  SimulateTransactionInputSchema,
+  CreateTransactionDraftInputSchema,
+  AnalyzeTransactionRiskInputSchema,
+  ApproveTransactionInputSchema,
+  BroadcastTransactionInputSchema,
+  AnalyzeWalletInputSchema,
+  DetectRiskyApprovalsInputSchema,
+  PolicyEngine,
+  RiskEngine,
+  PortfolioAnalyzer,
+  ApprovalAnalyzer,
+  logger 
+} from '@weth/shared';
+import { zodToJsonSchema } from 'zod-to-json-schema';
+import * as dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename_mcp = fileURLToPath(import.meta.url);
+const __dirname_mcp = path.dirname(__filename_mcp);
+dotenv.config({ path: path.resolve(__dirname_mcp, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname_mcp, '../../../.env') });
+dotenv.config();
+
+if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('postgres:postgres@')) {
+  process.env.DATABASE_URL = "postgresql://weth:weth_pass@localhost:5433/weth_db?schema=public";
+}
+
+const prisma = new PrismaClient();
+
+const server = new Server(
+  {
+    name: "weth-mcp-server",
+    version: "1.0.0",
+  },
+  {
+    capabilities: {
+      tools: {},
+    },
+  }
+);
+
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  return {
+    tools: [
+      {
+        name: "get_balance",
+        description: "Get the Ethereum balance of an address on Sepolia testnet.",
+        inputSchema: zodToJsonSchema(GetBalanceInputSchema),
+      },
+      {
+        name: "get_token_balances",
+        description: "Get ERC20 token balances for an address.",
+        inputSchema: zodToJsonSchema(GetTokenBalancesInputSchema),
+      },
+      {
+        name: "get_transactions",
+        description: "Get recent transactions for an address.",
+        inputSchema: zodToJsonSchema(GetTransactionsInputSchema),
+      },
+      {
+        name: "get_wallet_summary",
+        description: "Get a summary of a wallet including balance, token count, and recent activity.",
+        inputSchema: zodToJsonSchema(GetWalletSummaryInputSchema),
+      },
+      {
+        name: "resolve_ens",
+        description: "Resolve an ENS name to an Ethereum address.",
+        inputSchema: zodToJsonSchema(ResolveEnsInputSchema),
+      },
+      {
+        name: "estimate_gas",
+        description: "Estimate gas costs for a transaction.",
+        inputSchema: zodToJsonSchema(EstimateGasInputSchema),
+      },
+      {
+        name: "simulate_transaction",
+        description: "Simulate a transaction execution on Sepolia without broadcasting.",
+        inputSchema: zodToJsonSchema(SimulateTransactionInputSchema),
+      },
+      {
+        name: "create_transaction_draft",
+        description: "Create a draft transaction that requires human approval.",
+        inputSchema: zodToJsonSchema(CreateTransactionDraftInputSchema),
+      },
+      {
+        name: "analyze_transaction_risk",
+        description: "Analyze risk and policy for a transaction draft.",
+        inputSchema: zodToJsonSchema(AnalyzeTransactionRiskInputSchema),
+      },
+      {
+        name: "approve_transaction",
+        description: "Approve a drafted transaction for signing. State change only.",
+        inputSchema: zodToJsonSchema(ApproveTransactionInputSchema),
+      },
+      {
+        name: "broadcast_transaction",
+        description: "Broadcast a raw signed transaction.",
+        inputSchema: zodToJsonSchema(BroadcastTransactionInputSchema),
+      },
+      {
+        name: "analyze_wallet",
+        description: "Analyze wallet portfolio and asset allocation risk.",
+        inputSchema: zodToJsonSchema(AnalyzeWalletInputSchema),
+      },
+      {
+        name: "detect_risky_approvals",
+        description: "Scan wallet history for risky ERC20 allowances and interactions.",
+        inputSchema: zodToJsonSchema(DetectRiskyApprovalsInputSchema),
+      }
+    ],
+  };
+});
+
+async function auditAction(toolName: string, requestPayload: any, responsePayload: any, transactionId?: string) {
+  try {
+    await prisma.transactionAudit.create({
+      data: {
+        toolName,
+        requestPayload: JSON.parse(JSON.stringify(requestPayload)),
+        responsePayload: JSON.parse(JSON.stringify(responsePayload)),
+        transactionId
+      }
+    });
+  } catch (err) {
+    logger.error({ err, toolName }, 'Failed to create audit log');
+  }
+}
+
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  const { name, arguments: args } = request.params;
+  let result: any;
+  let transactionId: string | undefined;
+
+  try {
+    switch (name) {
+      case "get_balance": {
+        const parsed = GetBalanceInputSchema.parse(args);
+        result = await BalanceService.getBalance(parsed.address);
+        break;
+      }
+      case "get_token_balances": {
+        const parsed = GetTokenBalancesInputSchema.parse(args);
+        result = await BalanceService.getTokenBalances(parsed.address);
+        break;
+      }
+      case "get_transactions": {
+        const parsed = GetTransactionsInputSchema.parse(args);
+        result = await TransactionService.getTransactions(parsed.address);
+        break;
+      }
+      case "get_wallet_summary": {
+        const parsed = GetWalletSummaryInputSchema.parse(args);
+        const [balance, tokens, txs] = await Promise.all([
+          BalanceService.getBalance(parsed.address),
+          BalanceService.getTokenBalances(parsed.address),
+          TransactionService.getTransactions(parsed.address)
+        ]);
+        const analytics = PortfolioAnalyzer.analyze(balance.eth, tokens);
+        result = {
+          ethBalance: balance.eth,
+          tokenCount: tokens.length,
+          recentActivity: txs.length,
+          portfolioRiskLevel: analytics.riskLevel,
+          diversificationLevel: analytics.diversificationLevel
+        };
+        break;
+      }
+      case "resolve_ens": {
+        const parsed = ResolveEnsInputSchema.parse(args);
+        result = await EnsService.resolveName(parsed.name);
+        break;
+      }
+      case "estimate_gas": {
+        const parsed = EstimateGasInputSchema.parse(args);
+        result = await TransactionExecutionService.estimateGas(parsed);
+        break;
+      }
+      case "simulate_transaction": {
+        const parsed = SimulateTransactionInputSchema.parse(args);
+        result = await TransactionExecutionService.simulateTransaction(parsed);
+        break;
+      }
+      case "create_transaction_draft": {
+        const parsed = CreateTransactionDraftInputSchema.parse(args);
+        
+        // 1. Estimate
+        const estimate = await TransactionExecutionService.estimateGas(parsed);
+        
+        // 2. Draft
+        const draft = await prisma.transactionDraft.create({
+          data: {
+            chainId: 11155111,
+            fromAddress: parsed.from,
+            toAddress: parsed.to,
+            value: parsed.value,
+            data: parsed.data || '0x',
+            gasEstimate: estimate as any,
+            status: "PENDING_APPROVAL"
+          }
+        });
+        transactionId = draft.id;
+        result = { draftId: draft.id, status: draft.status, estimate };
+        break;
+      }
+      case "analyze_transaction_risk": {
+        const parsed = AnalyzeTransactionRiskInputSchema.parse(args);
+        transactionId = parsed.draftId;
+        
+        const draft = await prisma.transactionDraft.findUnique({ where: { id: parsed.draftId } });
+        if (!draft) throw new Error("Draft not found");
+        
+        // Simulate
+        const simulation = await TransactionExecutionService.simulateTransaction({
+          from: draft.fromAddress,
+          to: draft.toAddress,
+          value: draft.value,
+          data: draft.data || undefined
+        });
+        
+        // Policy
+        const policy = PolicyEngine.evaluateTransaction({
+          to: draft.toAddress,
+          value: draft.value,
+          isUnknownContract: !!draft.data && draft.data !== '0x'
+        });
+        
+        // Risk
+        const risk = RiskEngine.assessTransaction({
+          to: draft.toAddress,
+          value: draft.value,
+          hasData: !!draft.data && draft.data !== '0x',
+          isUnknownContract: !!draft.data && draft.data !== '0x',
+          simulationFailed: !simulation.success
+        });
+        
+        await prisma.policyDecision.create({
+          data: {
+            transactionId: draft.id,
+            result: policy.result,
+            reason: policy.reason
+          }
+        });
+        
+        await prisma.transactionDraft.update({
+          where: { id: draft.id },
+          data: {
+            status: policy.result === 'BLOCKED' ? 'REJECTED' : 'SIMULATED',
+            simulationResult: simulation as any,
+            riskLevel: risk.level,
+            policyResult: policy.result
+          }
+        });
+        
+        result = { simulation, policy, risk };
+        break;
+      }
+      case "approve_transaction": {
+        const parsed = ApproveTransactionInputSchema.parse(args);
+        transactionId = parsed.draftId;
+        const draft = await prisma.transactionDraft.findUnique({ where: { id: parsed.draftId } });
+        if (!draft) throw new Error("Draft not found");
+        if (draft.policyResult === 'BLOCKED') throw new Error("Cannot approve blocked transaction");
+        
+        const updated = await prisma.transactionDraft.update({
+          where: { id: draft.id },
+          data: { status: "APPROVED" }
+        });
+        result = { status: updated.status, message: "Transaction approved for external signing." };
+        break;
+      }
+      case "broadcast_transaction": {
+        const parsed = BroadcastTransactionInputSchema.parse(args);
+        result = await TransactionExecutionService.broadcastTransaction(parsed.signedTransaction);
+        if (parsed.draftId) {
+          await prisma.transactionDraft.update({
+            where: { id: parsed.draftId },
+            data: { status: "BROADCASTED" }
+          });
+        }
+        transactionId = parsed.draftId;
+        break;
+      }
+      case "analyze_wallet": {
+        const parsed = AnalyzeWalletInputSchema.parse(args);
+        const [balance, tokens] = await Promise.all([
+          BalanceService.getBalance(parsed.address),
+          BalanceService.getTokenBalances(parsed.address)
+        ]);
+        result = PortfolioAnalyzer.analyze(balance.eth, tokens);
+        break;
+      }
+      case "detect_risky_approvals": {
+        const parsed = DetectRiskyApprovalsInputSchema.parse(args);
+        const txs = await TransactionService.getTransactions(parsed.address);
+        result = ApprovalAnalyzer.analyzeApprovals(txs);
+        break;
+      }
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
+
+    // Fire & Forget Audit
+    auditAction(name, args, result, transactionId);
+
+    return {
+      content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+    };
+  } catch (error: any) {
+    logger.error({ err: error, tool: name, args }, "Tool execution error");
+    
+    // Fire & Forget Error Audit
+    auditAction(name, args, { error: error.message }, transactionId);
+    
+    return {
+      content: [{ type: "text", text: `Error: ${error.message}` }],
+      isError: true,
+    };
+  }
+});
+
+async function run() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  logger.info("WETH MCP Server running on stdio");
+}
+
+run().catch((error) => {
+  logger.fatal({ err: error }, "Server failed to start");
+  process.exit(1);
+});
