@@ -36,8 +36,14 @@ model CacheEntry {
   createdAt DateTime @default(now())
 }
 
+enum Chain {
+  ethereum
+  midnight
+}
+
 model TransactionDraft {
   id               String            @id @default(cuid())
+  chain            Chain             @default(ethereum)
   chainId          Int
   fromAddress      String
   toAddress        String
@@ -68,6 +74,7 @@ model TransactionAudit {
   id              String            @id @default(cuid())
   transactionId   String?
   transaction     TransactionDraft? @relation(fields: [transactionId], references: [id])
+  chain           Chain             @default(ethereum)
   toolName        String
   requestPayload  Json
   responsePayload Json?

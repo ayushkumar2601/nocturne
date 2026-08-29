@@ -1,10 +1,11 @@
-import { TransactionExecutionService } from "@weth/blockchain";
-import { PolicyEngine, RiskEngine } from "@weth/shared";
+import { ChainRouter } from "@weth/blockchain";
+import { PolicyEngine, RiskEngine, SupportedChain } from "@weth/shared";
 import { ThreatGraphService } from "./ThreatGraphService.js";
 import { SecurityReportGenerator } from "../generators/SecurityReportGenerator.js";
 import { GuardianFinding, GuardianSecurityReport } from "../types/guardian.js";
 
 export interface TransactionAnalyzerInput {
+  chain?: SupportedChain;
   from: string;
   to: string;
   value: string;
@@ -13,7 +14,7 @@ export interface TransactionAnalyzerInput {
 
 /**
  * TransactionAnalyzer
- * Reuses TransactionExecutionService, PolicyEngine, RiskEngine, and ThreatGraphService
+ * Reuses ChainRouter, PolicyEngine, RiskEngine, and ThreatGraphService
  * to evaluate transaction drafts and produce actionable security reports.
  */
 export class TransactionAnalyzer {
@@ -28,11 +29,11 @@ export class TransactionAnalyzer {
    * Evaluates a transaction and returns a GuardianSecurityReport.
    */
   static async analyze(input: TransactionAnalyzerInput): Promise<GuardianSecurityReport> {
-    const { from, to, value, data } = input;
+    const { chain = SupportedChain.ETHEREUM, from, to, value, data } = input;
     const hasData = !!data && data !== "0x";
 
     // 1. Simulation
-    const simulation = await TransactionExecutionService.simulateTransaction({
+    const simulation = await ChainRouter.simulateTransaction(chain, {
       from,
       to,
       value,

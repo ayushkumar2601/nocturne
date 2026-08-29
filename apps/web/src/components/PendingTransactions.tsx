@@ -7,6 +7,7 @@ import { Check, Loader2, AlertCircle } from 'lucide-react';
 
 interface PendingDraft {
   id: string;
+  chain?: string;
   toAddress?: string;
   value?: string;
   data?: string;
@@ -50,6 +51,14 @@ export function PendingTransactions() {
       alert('Please connect your wallet (Phantom or MetaMask) using the Connect button at the top right before signing.');
       return;
     }
+    
+    // Warn if chain is Midnight (wallet signing not fully implemented for Midnight MVP on frontend)
+    if (draft.chain === 'midnight') {
+      alert('Midnight testnet signature request detected. Simulating wallet approval for demo purposes.');
+      await broadcastMutation.mutateAsync({ draftId: draft.id, hash: '0x' + Array(64).fill('0').join('') });
+      return;
+    }
+
     try {
       const hash = await sendTransactionAsync({
         to: (draft.toAddress || '0x0000000000000000000000000000000000000000') as `0x${string}`,
@@ -81,6 +90,7 @@ export function PendingTransactions() {
         {drafts.map((draft: PendingDraft) => {
           const isSignedOnChain = !!approvedIds[draft.id] || draft.status === 'BROADCASTED' || draft.status === 'EXECUTED';
           const isAgentApproved = draft.status === 'APPROVED';
+          const chainBadgeColor = draft.chain === 'midnight' ? 'bg-purple-500/10 border-purple-500/30 text-purple-500' : 'bg-blue-500/10 border-blue-500/30 text-blue-500';
 
           return (
             <div
@@ -91,6 +101,9 @@ export function PendingTransactions() {
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400">
                     ID: {draft.id}
+                  </span>
+                  <span className={`px-2 py-0.5 border text-[10px] font-semibold uppercase ${chainBadgeColor}`}>
+                    {draft.chain || 'ethereum'}
                   </span>
                   {isAgentApproved && (
                     <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] font-semibold">

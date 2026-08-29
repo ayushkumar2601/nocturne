@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
-import { BalanceService } from '../services/BalanceService.js';
-import { TransactionService } from '../services/TransactionService.js';
-import { EnsService } from '../services/EnsService.js';
+import { BalanceService } from '../ethereum/services/BalanceService.js';
+import { TransactionService } from '../ethereum/services/TransactionService.js';
+import { EnsService } from '../ethereum/services/EnsService.js';
 
 // Mock dependencies
-vi.mock('../client.js', () => ({
+vi.mock('../ethereum/client.js', () => ({
   viemClient: {
     getBalance: vi.fn().mockResolvedValue(1000000000000000000n), // 1 ETH
     getEnsAddress: vi.fn().mockResolvedValue('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'),

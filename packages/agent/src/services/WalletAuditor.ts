@@ -1,33 +1,33 @@
-import { BalanceService, TransactionService } from "@weth/blockchain";
-import { ApprovalAnalyzer } from "@weth/shared";
+import { ChainRouter } from "@weth/blockchain";
+import { ApprovalAnalyzer, SupportedChain } from "@weth/shared";
 import { ThreatGraphService } from "./ThreatGraphService.js";
 import { SecurityReportGenerator } from "../generators/SecurityReportGenerator.js";
 import { GuardianFinding, GuardianSecurityReport } from "../types/guardian.js";
 
 /**
  * WalletAuditor
- * Reuses BalanceService, TransactionService, and ApprovalAnalyzer to audit wallets,
+ * Reuses ChainRouter and ApprovalAnalyzer to audit wallets,
  * compute quantitative security scores (100 - penalties), and identify threat exposure.
  */
 export class WalletAuditor {
   /**
    * Instance method wrapper for static audit
    */
-  async audit(walletAddress: string): Promise<GuardianSecurityReport> {
-    return WalletAuditor.audit(walletAddress);
+  async audit(walletAddress: string, chain: SupportedChain = SupportedChain.ETHEREUM): Promise<GuardianSecurityReport> {
+    return WalletAuditor.audit(walletAddress, chain);
   }
 
   /**
    * Audits a wallet address and produces a GuardianSecurityReport.
    */
-  static async audit(walletAddress: string): Promise<GuardianSecurityReport> {
+  static async audit(walletAddress: string, chain: SupportedChain = SupportedChain.ETHEREUM): Promise<GuardianSecurityReport> {
     const cleanAddr = walletAddress.toLowerCase();
 
     // 1. Fetch balances, tokens, and transaction history concurrently
     const [balance, tokens, txs] = await Promise.all([
-      BalanceService.getBalance(cleanAddr),
-      BalanceService.getTokenBalances(cleanAddr),
-      TransactionService.getTransactions(cleanAddr),
+      ChainRouter.getBalance(chain, cleanAddr),
+      ChainRouter.getTokenBalances(chain, cleanAddr),
+      ChainRouter.getTransactions(chain, cleanAddr),
     ]);
 
     // 2. Scan approvals using ApprovalAnalyzer

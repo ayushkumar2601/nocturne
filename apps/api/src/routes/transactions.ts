@@ -1,12 +1,13 @@
 import { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@weth/database';
-import { TransactionExecutionService } from '@weth/blockchain';
+import { ChainRouter } from '@weth/blockchain';
 import { 
   PolicyEngine, RiskEngine,
   EstimateGasInputSchema, SimulateTransactionInputSchema,
   CreateTransactionDraftInputSchema, AnalyzeTransactionRiskInputSchema,
   ApproveTransactionInputSchema, BroadcastTransactionInputSchema,
-  logger
+  logger,
+  SupportedChain
 } from '@weth/shared';
 
 const prisma = new PrismaClient();
@@ -30,7 +31,8 @@ export default async function (fastify: FastifyInstance) {
   fastify.post('/estimate-gas', async (request, reply) => {
     try {
       const parsed = EstimateGasInputSchema.parse(request.body);
-      const result = await TransactionExecutionService.estimateGas(parsed);
+      const chain = parsed.chain || SupportedChain.ETHEREUM;
+      const result = await ChainRouter.estimateGas(chain, parsed);
       auditAction('api:estimate-gas', parsed, result);
       return result;
     } catch (err: any) {
@@ -42,7 +44,8 @@ export default async function (fastify: FastifyInstance) {
   fastify.post('/simulate', async (request, reply) => {
     try {
       const parsed = SimulateTransactionInputSchema.parse(request.body);
-      const result = await TransactionExecutionService.simulateTransaction(parsed);
+      const chain = parsed.chain || SupportedChain.ETHEREUM;
+      const result = await ChainRouter.simulateTransaction(chain, parsed);
       auditAction('api:simulate', parsed, result);
       return result;
     } catch (err: any) {
@@ -54,11 +57,13 @@ export default async function (fastify: FastifyInstance) {
   fastify.post('/draft', async (request, reply) => {
     try {
       const parsed = CreateTransactionDraftInputSchema.parse(request.body);
-      const estimate = await TransactionExecutionService.estimateGas(parsed);
+      const chain = parsed.chain || SupportedChain.ETHEREUM;
+      const estimate = await ChainRouter.estimateGas(chain, parsed);
       
       const draft = await prisma.transactionDraft.create({
         data: {
-          chainId: 11155111,
+          chain,
+          chainId: chain === SupportedChain.MIDNIGHT ? 8888 : 11155111,
           fromAddress: parsed.from,
           toAddress: parsed.to,
           value: parsed.value,
@@ -67,7 +72,7 @@ export default async function (fastify: FastifyInstance) {
           status: "PENDING_APPROVAL"
         }
       });
-      const result = { draftId: draft.id, status: draft.status, estimate };
+      const result = { draftId: draft.id, status: draft.status, estimate, chain };
       auditAction('api:draft', parsed, result, draft.id);
       return result;
     } catch (err: any) {
@@ -82,7 +87,8 @@ export default async function (fastify: FastifyInstance) {
       const draft = await prisma.transactionDraft.findUnique({ where: { id: parsed.draftId } });
       if (!draft) throw new Error("Draft not found");
 
-      const simulation = await TransactionExecutionService.simulateTransaction({
+      const chain = (draft.chain as SupportedChain) || SupportedChain.ETHEREUM;
+      const simulation = await ChainRouter.simulateTransaction(chain, {
         from: draft.fromAddress,
         to: draft.toAddress,
         value: draft.value,
@@ -121,7 +127,7 @@ export default async function (fastify: FastifyInstance) {
         }
       });
 
-      const result = { simulation, policy, risk };
+      const result = { simulation, policy, risk, chain };
       auditAction('api:analyze', parsed, result, draft.id);
       return result;
     } catch (err: any) {
@@ -141,7 +147,7 @@ export default async function (fastify: FastifyInstance) {
         where: { id: draft.id },
         data: { status: "APPROVED" }
       });
-      const result = { status: updated.status, message: "Transaction approved for external signing." };
+      const result = { status: updated.status, message: "Transaction approved for external signing.", chain: updated.chain };
       auditAction('api:approve', parsed, result, draft.id);
       return result;
     } catch (err: any) {
@@ -153,17 +159,19 @@ export default async function (fastify: FastifyInstance) {
   fastify.post('/broadcast', async (request, reply) => {
     try {
       const parsed = BroadcastTransactionInputSchema.parse(request.body);
+      const chain = parsed.chain || SupportedChain.ETHEREUM;
       
       let hash = parsed.signedTransaction;
       let result: any = { success: true };
 
       // If it's longer than a standard 32-byte hash (66 chars with 0x), it's a raw signed tx that needs broadcasting
       if (parsed.signedTransaction.length > 66) {
-        result = await TransactionExecutionService.broadcastTransaction(parsed.signedTransaction);
+        result = await ChainRouter.broadcastTransaction(chain, parsed.signedTransaction);
         hash = result.hash || hash;
       } else {
         result.hash = hash;
       }
+
       
       if (parsed.draftId) {
         await prisma.transactionDraft.update({

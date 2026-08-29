@@ -1,6 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { TransactionAnalyzer } from "../services/TransactionAnalyzer.js";
-import { TransactionExecutionService } from "@weth/blockchain";
+import { ChainRouter } from "@weth/blockchain";
+import { ThreatGraphService } from "../services/ThreatGraphService.js";
+
+vi.mock("@weth/blockchain", () => ({
+  ChainRouter: {
+    simulateTransaction: vi.fn(),
+  },
+}));
 
 describe("TransactionAnalyzer", () => {
   beforeEach(() => {
@@ -8,7 +15,7 @@ describe("TransactionAnalyzer", () => {
   });
 
   it("detects unlimited approval and recommends Reject", async () => {
-    vi.spyOn(TransactionExecutionService, "simulateTransaction").mockResolvedValue({
+    vi.spyOn(ChainRouter, "simulateTransaction").mockResolvedValue({
       success: true,
       data: "0x",
       warnings: [],
@@ -33,7 +40,7 @@ describe("TransactionAnalyzer", () => {
   });
 
   it("recommends Reject when interacting with a known drainer contract", async () => {
-    vi.spyOn(TransactionExecutionService, "simulateTransaction").mockResolvedValue({
+    vi.spyOn(ChainRouter, "simulateTransaction").mockResolvedValue({
       success: true,
       data: "0x",
       warnings: [],
@@ -51,7 +58,7 @@ describe("TransactionAnalyzer", () => {
   });
 
   it("marks low risk simple ETH transfer as Safe to Proceed", async () => {
-    vi.spyOn(TransactionExecutionService, "simulateTransaction").mockResolvedValue({
+    vi.spyOn(ChainRouter, "simulateTransaction").mockResolvedValue({
       success: true,
       data: "0x",
       warnings: [],

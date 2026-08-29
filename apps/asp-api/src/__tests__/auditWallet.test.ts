@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { buildApp } from "../index.js";
-import { BalanceService, TransactionService } from "@weth/blockchain";
+import { ChainRouter } from "@weth/blockchain";
 import { AuditLogService } from "../services/AuditLogService.js";
 
 describe("POST /audit-wallet", () => {
@@ -10,9 +10,9 @@ describe("POST /audit-wallet", () => {
   });
 
   it("verifies valid wallet and returns GuardianSecurityReport", async () => {
-    vi.spyOn(BalanceService, "getBalance").mockResolvedValue({ eth: 1.5, network: "sepolia" });
-    vi.spyOn(BalanceService, "getTokenBalances").mockResolvedValue([]);
-    vi.spyOn(TransactionService, "getTransactions").mockResolvedValue([]);
+    vi.spyOn(ChainRouter, "getBalance").mockResolvedValue({ eth: 1.5, network: "sepolia" });
+    vi.spyOn(ChainRouter, "getTokenBalances").mockResolvedValue([]);
+    vi.spyOn(ChainRouter, "getTransactions").mockResolvedValue([]);
 
     const app = await buildApp();
     const response = await app.inject({

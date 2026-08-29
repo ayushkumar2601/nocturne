@@ -1,7 +1,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { BalanceService, EnsService, TransactionService, TransactionExecutionService } from '@weth/blockchain';
+import { ChainRouter } from '@weth/blockchain';
 import { PrismaClient } from '@weth/database';
 import { 
   GetBalanceInputSchema, 
@@ -21,7 +21,8 @@ import {
   RiskEngine,
   PortfolioAnalyzer,
   ApprovalAnalyzer,
-  logger 
+  logger,
+  SupportedChain
 } from '@weth/shared';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import * as dotenv from 'dotenv';
@@ -148,25 +149,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case "get_balance": {
         const parsed = GetBalanceInputSchema.parse(args);
-        result = await BalanceService.getBalance(parsed.address);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
+        result = await ChainRouter.getBalance(chain, parsed.address);
         break;
       }
       case "get_token_balances": {
         const parsed = GetTokenBalancesInputSchema.parse(args);
-        result = await BalanceService.getTokenBalances(parsed.address);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
+        result = await ChainRouter.getTokenBalances(chain, parsed.address);
         break;
       }
       case "get_transactions": {
         const parsed = GetTransactionsInputSchema.parse(args);
-        result = await TransactionService.getTransactions(parsed.address);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
+        result = await ChainRouter.getTransactions(chain, parsed.address);
         break;
       }
       case "get_wallet_summary": {
         const parsed = GetWalletSummaryInputSchema.parse(args);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
         const [balance, tokens, txs] = await Promise.all([
-          BalanceService.getBalance(parsed.address),
-          BalanceService.getTokenBalances(parsed.address),
-          TransactionService.getTransactions(parsed.address)
+          ChainRouter.getBalance(chain, parsed.address),
+          ChainRouter.getTokenBalances(chain, parsed.address),
+          ChainRouter.getTransactions(chain, parsed.address)
         ]);
         const analytics = PortfolioAnalyzer.analyze(balance.eth, tokens);
         result = {
@@ -180,29 +185,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       case "resolve_ens": {
         const parsed = ResolveEnsInputSchema.parse(args);
-        result = await EnsService.resolveName(parsed.name);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
+        result = await ChainRouter.resolveEns(chain, parsed.name);
         break;
       }
       case "estimate_gas": {
         const parsed = EstimateGasInputSchema.parse(args);
-        result = await TransactionExecutionService.estimateGas(parsed);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
+        result = await ChainRouter.estimateGas(chain, parsed);
         break;
       }
       case "simulate_transaction": {
         const parsed = SimulateTransactionInputSchema.parse(args);
-        result = await TransactionExecutionService.simulateTransaction(parsed);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
+        result = await ChainRouter.simulateTransaction(chain, parsed);
         break;
       }
       case "create_transaction_draft": {
         const parsed = CreateTransactionDraftInputSchema.parse(args);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
         
         // 1. Estimate
-        const estimate = await TransactionExecutionService.estimateGas(parsed);
+        const estimate = await ChainRouter.estimateGas(chain, parsed);
         
         // 2. Draft
         const draft = await prisma.transactionDraft.create({
           data: {
-            chainId: 11155111,
+            chain,
+            chainId: chain === SupportedChain.MIDNIGHT ? 8888 : 11155111,
             fromAddress: parsed.from,
             toAddress: parsed.to,
             value: parsed.value,
@@ -212,7 +222,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
         });
         transactionId = draft.id;
-        result = { draftId: draft.id, status: draft.status, estimate };
+        result = { draftId: draft.id, status: draft.status, estimate, chain };
         break;
       }
       case "analyze_transaction_risk": {
@@ -222,8 +232,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const draft = await prisma.transactionDraft.findUnique({ where: { id: parsed.draftId } });
         if (!draft) throw new Error("Draft not found");
         
+        const chain = (draft.chain as SupportedChain) || SupportedChain.ETHEREUM;
         // Simulate
-        const simulation = await TransactionExecutionService.simulateTransaction({
+        const simulation = await ChainRouter.simulateTransaction(chain, {
           from: draft.fromAddress,
           to: draft.toAddress,
           value: draft.value,
@@ -264,7 +275,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
         });
         
-        result = { simulation, policy, risk };
+        result = { simulation, policy, risk, chain };
         break;
       }
       case "approve_transaction": {
@@ -278,12 +289,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           where: { id: draft.id },
           data: { status: "APPROVED" }
         });
-        result = { status: updated.status, message: "Transaction approved for external signing." };
+        result = { status: updated.status, message: "Transaction approved for external signing.", chain: updated.chain };
         break;
       }
       case "broadcast_transaction": {
         const parsed = BroadcastTransactionInputSchema.parse(args);
-        result = await TransactionExecutionService.broadcastTransaction(parsed.signedTransaction);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
+        result = await ChainRouter.broadcastTransaction(chain, parsed.signedTransaction);
         if (parsed.draftId) {
           await prisma.transactionDraft.update({
             where: { id: parsed.draftId },
@@ -295,16 +307,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       case "analyze_wallet": {
         const parsed = AnalyzeWalletInputSchema.parse(args);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
         const [balance, tokens] = await Promise.all([
-          BalanceService.getBalance(parsed.address),
-          BalanceService.getTokenBalances(parsed.address)
+          ChainRouter.getBalance(chain, parsed.address),
+          ChainRouter.getTokenBalances(chain, parsed.address)
         ]);
         result = PortfolioAnalyzer.analyze(balance.eth, tokens);
         break;
       }
       case "detect_risky_approvals": {
         const parsed = DetectRiskyApprovalsInputSchema.parse(args);
-        const txs = await TransactionService.getTransactions(parsed.address);
+        const chain = parsed.chain || SupportedChain.ETHEREUM;
+        const txs = await ChainRouter.getTransactions(chain, parsed.address);
         result = ApprovalAnalyzer.analyzeApprovals(txs);
         break;
       }

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { buildApp } from "../index.js";
-import { TransactionExecutionService } from "@weth/blockchain";
+import { ChainRouter } from "@weth/blockchain";
 import { AuditLogService } from "../services/AuditLogService.js";
 
 describe("POST /analyze-transaction", () => {
@@ -10,7 +10,7 @@ describe("POST /analyze-transaction", () => {
   });
 
   it("verifies valid standard transaction and returns GuardianSecurityReport", async () => {
-    vi.spyOn(TransactionExecutionService, "simulateTransaction").mockResolvedValue({
+    vi.spyOn(ChainRouter, "simulateTransaction").mockResolvedValue({
       success: true,
       data: "0x",
       warnings: [],
@@ -38,7 +38,7 @@ describe("POST /analyze-transaction", () => {
   });
 
   it("verifies unlimited approval detection and returns Reject", async () => {
-    vi.spyOn(TransactionExecutionService, "simulateTransaction").mockResolvedValue({
+    vi.spyOn(ChainRouter, "simulateTransaction").mockResolvedValue({
       success: true,
       data: "0x",
       warnings: [],

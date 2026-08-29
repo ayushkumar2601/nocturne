@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { buildApp } from "../index.js";
-import { TransactionExecutionService, BalanceService, TransactionService } from "@weth/blockchain";
+import { ChainRouter } from "@weth/blockchain";
 import { AuditLogService } from "../services/AuditLogService.js";
 
 describe("POST /guardian/chat", () => {
@@ -10,7 +10,7 @@ describe("POST /guardian/chat", () => {
   });
 
   it("routes transaction intent to TransactionAnalyzer and generates conversational response", async () => {
-    vi.spyOn(TransactionExecutionService, "simulateTransaction").mockResolvedValue({
+    vi.spyOn(ChainRouter, "simulateTransaction").mockResolvedValue({
       success: true,
       data: "0x",
       warnings: [],
@@ -33,9 +33,9 @@ describe("POST /guardian/chat", () => {
   });
 
   it("routes wallet audit intent to WalletAuditor", async () => {
-    vi.spyOn(BalanceService, "getBalance").mockResolvedValue({ eth: 1.0, network: "sepolia" });
-    vi.spyOn(BalanceService, "getTokenBalances").mockResolvedValue([]);
-    vi.spyOn(TransactionService, "getTransactions").mockResolvedValue([]);
+    vi.spyOn(ChainRouter, "getBalance").mockResolvedValue({ eth: 1.0, network: "sepolia" });
+    vi.spyOn(ChainRouter, "getTokenBalances").mockResolvedValue([]);
+    vi.spyOn(ChainRouter, "getTransactions").mockResolvedValue([]);
 
     const app = await buildApp();
     const response = await app.inject({
