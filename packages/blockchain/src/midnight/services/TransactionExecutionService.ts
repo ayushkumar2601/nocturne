@@ -25,6 +25,18 @@ export class TransactionExecutionService {
 
   static async estimateGas(params: { from: string; to: string; value: string; data?: string }) {
     const { from, to, value, data } = params;
+    
+    // MOCK FOR MIDNIGHT HACKATHON DEMO
+    if (from.startsWith('mn_') || to.startsWith('mn_')) {
+      return {
+        gasLimit: "21000",
+        gasPrice: "15000000000",
+        maxFeePerGas: "15000000000",
+        maxPriorityFeePerGas: "1500000000",
+        estimatedCostETH: "0.000315", // tMID
+      };
+    }
+
     const valueWei = TransactionExecutionService.parseValueToWei(value);
 
     let gasLimit = 21000n;
@@ -65,6 +77,16 @@ export class TransactionExecutionService {
 
   static async simulateTransaction(params: { from: string; to: string; value: string; data?: string }) {
     const { from, to, value, data } = params;
+    
+    // MOCK FOR MIDNIGHT HACKATHON DEMO
+    if (from.startsWith('mn_') || to.startsWith('mn_')) {
+      return {
+        success: true,
+        data: data || '0x',
+        warnings: [],
+      };
+    }
+
     const valueWei = TransactionExecutionService.parseValueToWei(value);
     try {
       const result = await midnightPublicClient.call({
