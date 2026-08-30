@@ -4,6 +4,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Shield, Terminal, Activity } from "lucide-react";
+import { ConnectMidnightWallet } from "./ConnectMidnightWallet";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -66,7 +67,8 @@ export function Navigation() {
             <span className="tracking-tight uppercase">SYS_HEALTH: 100% OPTIMAL</span>
           </div>
 
-          <div className="scale-90 origin-right">
+          <div className="scale-90 origin-right flex items-center gap-2">
+            <ConnectMidnightWallet />
             <ConnectButton showBalance={false} />
           </div>
         </div>

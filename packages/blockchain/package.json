@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "type": "module",
   "description": "WETH Blockchain Layer",
-  "main": "dist/index.js", "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch"
   },
   "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "^0.19.0",
+    "@midnight-ntwrk/midnight-js": "^4.1.1",
     "@weth/shared": "workspace:*",
     "dotenv": "^16.4.5",
     "ioredis": "^5.4.1",

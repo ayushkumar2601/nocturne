@@ -1,0 +1,19 @@
+pragma compact-v0;
+
+// A shielded ledger state mapping a user's address to their risk score
+export ledger riskScores: Map<Bytes<32>, Uint<8>>;
+
+// Updates the risk score on the Midnight blockchain via a zero-knowledge circuit
+export circuit updateRiskScore(user: Bytes<32>, score: Uint<8>): [] {
+    // Assert that the risk score is within valid bounds (0 to 100)
+    assert score <= 100 "Invalid risk score. Must be between 0 and 100.";
+    riskScores.insert(user, score);
+}
+
+// Allows an AI agent or a third-party to verify mathematically if a user is a "Safe" actor
+// without revealing the actual risk score itself on the public chain.
+export circuit assertSafeActor(user: Bytes<32>): [] {
+    // Passes only if the user is considered "Safe" (e.g., score < 30)
+    const score = riskScores.lookup(user);
+    assert score < 30 "User is not verified as a safe actor";
+}
