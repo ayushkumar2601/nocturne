@@ -15,6 +15,7 @@ export function Navigation() {
     { href: "/audit", label: "Wallet Scanner" },
     { href: "/transactions", label: "EVM Simulator" },
     { href: "/signing", label: "Signing Console" },
+    { href: "/deploy", label: "Midnight Deployer" },
   ];
 
   return (

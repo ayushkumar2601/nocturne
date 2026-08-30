@@ -17,10 +17,19 @@ export function ConnectMidnightWallet() {
         const state = await api.state();
         setAddress(state.address);
       } else {
-        alert("Lace wallet with Midnight integration not found! Please install the Lace Midnight extension.");
+        console.warn("window.midnight.mnLace not found. Lace extension might be lagging.");
+        const fallbackAddress = prompt(
+          "Lace extension API not detected (it might be lagging/blank). \n\nFor hackathon demo purposes, you can paste your Midnight address (mn_addr_...) here to bypass:"
+        );
+        if (fallbackAddress && fallbackAddress.startsWith("mn_addr")) {
+          setAddress(fallbackAddress);
+        } else if (fallbackAddress) {
+          alert("Invalid address format. Must start with mn_addr");
+        }
       }
     } catch (err) {
       console.error("Failed to connect to Lace wallet:", err);
+      alert("Failed to connect to Lace. Check console for details.");
     } finally {
       setIsConnecting(false);
     }
