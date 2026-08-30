@@ -51,12 +51,12 @@ graph TD
 
     classDef midnight fill:#5e6ad2,stroke:#000,stroke-width:2px,color:#fff;
     classDef ai fill:#d97757,stroke:#000,stroke-width:2px,color:#fff;
-    classDef graph fill:#018bff,stroke:#000,stroke-width:2px,color:#fff;
+    classDef graphNode fill:#018bff,stroke:#000,stroke-width:2px,color:#fff;
     
     MN:::midnight
     C:::ai
     M:::ai
-    N4:::graph
+    N4:::graphNode
 ```
 
 ### Core Components
