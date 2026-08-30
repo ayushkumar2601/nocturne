@@ -314,19 +314,19 @@ export default function Home() {
 
               {activeTab === 'config' && (
                 <div className="text-[#A8B2C1]">
-<pre><code><span className="text-[#E06C75]">{"{"}</span>
-  <span className="text-[#98C379]">"mcpServers"</span><span className="text-[#E06C75]">:</span> <span className="text-[#E06C75]">{"{"}</span>
-    <span className="text-[#98C379]">"nocturne"</span><span className="text-[#E06C75]">:</span> <span className="text-[#E06C75]">{"{"}</span>
-      <span className="text-[#98C379]">"command"</span><span className="text-[#E06C75]">:</span> <span className="text-[#98C379]">"node"</span><span className="text-white">,</span>
-      <span className="text-[#98C379]">"args"</span><span className="text-[#E06C75]">:</span> <span className="text-white">[</span>
-        <span className="text-[#98C379]">"/absolute/path/to/nocturne/apps/mcp-server/dist/index.js"</span>
-      <span className="text-white">]</span><span className="text-white">,</span>
-      <span className="text-[#98C379]">"env"</span><span className="text-[#E06C75]">:</span> <span className="text-[#E06C75]">{"{"}</span>
-        <span className="text-[#98C379]">"DATABASE_URL"</span><span className="text-[#E06C75]">:</span> <span className="text-[#98C379]">"postgresql://weth:weth_pass@localhost:5432/weth_db?schema=public"</span>
-      <span className="text-[#E06C75]">{"}"}</span>
-    <span className="text-[#E06C75]">{"}"}</span>
-  <span className="text-[#E06C75]">{"}"}</span>
-<span className="text-[#E06C75]">{"}"}</span></code></pre>
+<pre><code>{`{
+  "mcpServers": {
+    "nocturne": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/nocturne/apps/mcp-server/dist/index.js"
+      ],
+      "env": {
+        "DATABASE_URL": "postgresql://weth:weth_pass@localhost:5432/weth_db?schema=public"
+      }
+    }
+  }
+}`}</code></pre>
                 </div>
               )}
 

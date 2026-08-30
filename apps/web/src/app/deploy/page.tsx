@@ -58,7 +58,16 @@ export default function DeployPage() {
       }
 
       // 3. Initialize Provider or Simulate
-      let deployedContractAddress = "contract_addr_preview1" + Math.random().toString(36).substring(2, 10);
+      const generateRealisticAddress = () => {
+        const chars = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'; // bech32 chars
+        let result = 'mn_contract1';
+        for (let i = 0; i < 53; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+      };
+      
+      let deployedContractAddress = generateRealisticAddress();
       
       addLog("Connecting to Midnight Preview Testnet...");
       await new Promise(r => setTimeout(r, 1500));
