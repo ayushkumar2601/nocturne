@@ -18,7 +18,7 @@ const DEFAULT_MESSAGES: ChatMessage[] = [
   {
     id: "welcome-1",
     sender: "guardian",
-    text: "WETH GUARDIAN ASP // INTENT ROUTER READY. Enter natural language instructions or paste raw EVM calldata / addresses below.",
+    text: "MIDNIGHT GUARDIAN ASP // INTENT ROUTER READY. Enter natural language instructions or paste raw Compact calldata / addresses below.",
   },
 ];
 
@@ -37,14 +37,14 @@ export function GuardianChat() {
   const quickActions = [
     {
       label: "[AUDIT_WALLET]",
-      prompt: "Audit my wallet 0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+      prompt: "Audit my wallet mn_addr_preview1nkcdedpm4jqns2j9x6zmsz4hg7f8ryrw725hxxvm77tt6wg740xst609g4",
       status: "SCANNING WALLET GRAPH...",
     },
     {
       label: "[SIMULATE_CALLDATA]",
       prompt:
-        "Analyze transaction from 0x742d35Cc6634C0532925a3b844Bc454e4438f44e to 0x9999999999999999999999999999999999999999 with calldata 0x095ea7b30000000000000000000000009999999999999999999999999999999999999999ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-      status: "EXECUTING ETH_CALL SIMULATION...",
+        "Analyze transaction from mn_addr_preview1nkcdedpm4jqns2j9x6zmsz4hg7f8ryrw725hxxvm77tt6wg740xst609g4 to mn_addr_preview1nkhydgbe4jqns2j9x6zmsz4hg7f8ryrw725hxxvm89tt6rg740yst610g4 with calldata 0x095ea7b30000000000000000000000009999999999999999999999999999999999999999ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      status: "EXECUTING MIDNIGHT_CALL SIMULATION...",
     },
     {
       label: "[CONTRACT_TRUST]",
@@ -71,7 +71,7 @@ export function GuardianChat() {
         (textToSend.toLowerCase().includes("wallet")
           ? "SCANNING WALLET GRAPH..."
           : textToSend.toLowerCase().includes("transaction") || textToSend.includes("0x095ea7b3")
-          ? "EXECUTING ETH_CALL SIMULATION..."
+          ? "EXECUTING MIDNIGHT_CALL SIMULATION..."
           : "EVALUATING BYTECODE & GRAPH...")
     );
 
@@ -86,7 +86,7 @@ export function GuardianChat() {
       };
       setMessages((prev) => [...prev, guardianMsg]);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to reach WETH Guardian runtime.";
+      const msg = err instanceof Error ? err.message : "Failed to reach Midnight Guardian runtime.";
       const errorMsg: ChatMessage = {
         id: generateMsgId(),
         sender: "guardian",

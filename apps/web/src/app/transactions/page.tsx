@@ -9,22 +9,22 @@ import { FindingsList } from "../../components/guardian/FindingsList";
 import { Terminal, Code, Loader2, AlertCircle, ShieldCheck, Cpu } from "lucide-react";
 
 export default function TransactionAnalysisPage() {
-  const [from, setFrom] = useState("0x742d35Cc6634C0532925a3b844Bc454e4438f44e");
-  const [to, setTo] = useState("0x9999999999999999999999999999999999999999");
+  const [from, setFrom] = useState("mn_addr_preview1nkcdedpm4jqns2j9x6zmsz4hg7f8ryrw725hxxvm77tt6wg740xst609g4");
+  const [to, setTo] = useState("mn_addr_preview1nkhydgbe4jqns2j9x6zmsz4hg7f8ryrw725hxxvm89tt6rg740yst610g4");
   const [value, setValue] = useState("0");
   const [calldata, setCalldata] = useState(
     "0x095ea7b30000000000000000000000009999999999999999999999999999999999999999ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
   );
-  const [selectedChain, setSelectedChain] = useState<"ETH_MAINNET" | "BASE" | "ARBITRUM">("BASE");
+  const [selectedChain, setSelectedChain] = useState<"MIDNIGHT_MAINNET" | "PREVIEW_TESTNET" | "DEVNET">("PREVIEW_TESTNET");
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<GuardianSecurityReport | null>(null);
 
   const chainIds: Record<string, string> = {
-    ETH_MAINNET: "1",
-    BASE: "8453",
-    ARBITRUM: "42161",
+    MIDNIGHT_MAINNET: "1",
+    PREVIEW_TESTNET: "2",
+    DEVNET: "3",
   };
 
   async function handleAnalyze(e?: React.FormEvent) {
@@ -58,11 +58,11 @@ export default function TransactionAnalysisPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-[#27272a] bg-[#101014] text-[#a1a1aa] text-[11px] font-mono uppercase tracking-wider">
             <Terminal className="w-3.5 h-3.5 text-[#5e6ad2]" />
-            <span>ETH_CALL // SIMULATING ON {selectedChain} (CHAIN_ID: {chainIds[selectedChain]})</span>
+            <span>MIDNIGHT_CALL // SIMULATING ON {selectedChain} (CHAIN_ID: {chainIds[selectedChain]})</span>
           </div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-[#10b981]/40 bg-[#10b981]/10 text-[#10b981] text-[11px] font-mono uppercase tracking-wider">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>[x402_PROTOCOL: COMPLIANT // MICRO-ESCROW 0.0001 ETH VERIFIED]</span>
+            <span>[x402_PROTOCOL: COMPLIANT // MICRO-ESCROW 1 tMID VERIFIED]</span>
           </div>
         </div>
 
@@ -86,12 +86,12 @@ export default function TransactionAnalysisPage() {
           <div className="flex items-center justify-between mb-2">
             <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#a1a1aa] flex items-center gap-1.5">
               <Cpu className="w-3.5 h-3.5 text-[#5e6ad2]" />
-              <span>TARGET EVM NETWORK FOR STATE SIMULATION</span>
+              <span>TARGET MIDNIGHT NETWORK FOR STATE SIMULATION</span>
             </label>
             <span className="text-[10px] font-mono text-[#52525b]">REAL-TIME RPC FORK</span>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            {(["ETH_MAINNET", "BASE", "ARBITRUM"] as const).map((chain) => (
+            {(["MIDNIGHT_MAINNET", "PREVIEW_TESTNET", "DEVNET"] as const).map((chain) => (
               <button
                 key={chain}
                 type="button"
@@ -140,7 +140,7 @@ export default function TransactionAnalysisPage() {
 
         <div>
           <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#a1a1aa] mb-2">
-            VALUE (WEI)
+            VALUE (tMID)
           </label>
           <input
             type="text"
@@ -197,7 +197,7 @@ export default function TransactionAnalysisPage() {
           <Loader2 className="w-8 h-8 animate-spin text-[#5e6ad2] mx-auto" />
           <div className="space-y-1 font-mono">
             <h3 className="text-sm font-bold uppercase text-[#ffffff]">
-              EXECUTING ETH_CALL &amp; HEURISTICS ON {selectedChain}...
+              EXECUTING MIDNIGHT_CALL &amp; HEURISTICS ON {selectedChain}...
             </h3>
             <p className="text-xs text-[#71717a]">
               Running sandbox execution, estimating gas profile, and evaluating policy invariants against calldata.

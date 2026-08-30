@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WETH Guardian — AI Security Copilot | Don't Sign Blind",
+  title: "Midnight Guardian — AI Security Copilot | Don't Sign Blind",
   description:
-    "Analyze, simulate and understand every crypto transaction before approval. Powered by real-time EVM simulation and multi-hop threat graph intelligence.",
+    "Analyze, simulate and understand every crypto transaction before approval. Powered by real-time Midnight zero-knowledge simulation and multi-hop threat graph intelligence.",
 };
 
 export default function RootLayout({
@@ -60,12 +60,11 @@ export default function RootLayout({
             </main>
             <footer className="w-full py-6 mt-16 border-t border-neutral-200 dark:border-neutral-900 text-center text-xs text-neutral-500 dark:text-neutral-400">
               <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-2 font-mono">
-                  <span className="font-bold text-neutral-800 dark:text-neutral-200">WETH Guardian ASP</span>
-                  <span>— Don&apos;t Sign Blind.</span>
-                </div>
-                <div>
-                  Protected by <span className="font-semibold text-neutral-900 dark:text-neutral-100">WETH Core Intelligence Layer</span>
+                <div className="flex flex-col">
+                  <span className="font-bold text-neutral-800 dark:text-neutral-200">Midnight Guardian ASP</span>
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Protected by <span className="font-semibold text-neutral-900 dark:text-neutral-100">Midnight Core Intelligence Layer</span>
+                  </span>
                 </div>
               </div>
             </footer>

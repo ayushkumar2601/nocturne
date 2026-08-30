@@ -15,13 +15,13 @@ export default function GuardianCopilotPage() {
           <div className="max-w-2xl space-y-3">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-[#27272a] bg-[#101014] text-[#a1a1aa] text-[11px] font-mono uppercase tracking-wider">
               <Terminal className="w-3.5 h-3.5 text-[#5e6ad2]" />
-              <span>EVM POLICY &amp; THREAT ENGINE // ZERO-KEY RUNTIME</span>
+              <span>MIDNIGHT POLICY & THREAT ENGINE // ZERO-KEY RUNTIME</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#ffffff]">
               Deterministic Pre-Sign Verification.
             </h1>
             <p className="text-sm text-[#a1a1aa] leading-relaxed font-mono">
-              Execute multi-hop Neo4j threat graph traversal and eth_call state simulations before transmitting transactions to RPC nodes.
+              Execute multi-hop Neo4j threat graph traversal and compact_call state simulations before transmitting transactions to RPC nodes.
             </p>
           </div>
 
@@ -85,7 +85,7 @@ export default function GuardianCopilotPage() {
               </div>
               <div className="space-y-1">
                 <div className="text-[#52525b]">SIMULATOR TRACE</div>
-                <div className="text-[#ffffff] font-semibold">ETH_CALL ACTIVE</div>
+                <div className="text-[#ffffff] font-semibold">MIDNIGHT_CALL ACTIVE</div>
               </div>
               <div className="space-y-1">
                 <div className="text-[#52525b]">FAIL-SAFE CACHE</div>

@@ -8,7 +8,7 @@ import { WalletScoreCard } from "../../components/guardian/WalletScoreCard";
 import { Shield, Search, Loader2, AlertCircle, Terminal } from "lucide-react";
 
 export default function WalletAuditPage() {
-  const [address, setAddress] = useState("0x742d35Cc6634C0532925a3b844Bc454e4438f44e");
+  const [address, setAddress] = useState("mn_addr_preview1nkcdedpm4jqns2j9x6zmsz4hg7f8ryrw725hxxvm77tt6wg740xst609g4");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<GuardianSecurityReport | null>(null);
@@ -44,7 +44,7 @@ export default function WalletAuditPage() {
           WALLET EXPOSURE &amp; HEURISTIC SCANNER
         </h1>
         <p className="text-xs text-[#a1a1aa] font-mono leading-relaxed">
-          Deep-scan EVM wallet token balances, active ERC20 allowances, and multi-hop Neo4j graph relationships.
+          Deep-scan Midnight wallet token balances, shielded assets, and multi-hop Neo4j graph relationships.
         </p>
       </div>
 
@@ -55,7 +55,7 @@ export default function WalletAuditPage() {
       >
         <div>
           <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#a1a1aa] mb-2">
-            TARGET EVM ADDRESS OR ENS
+            TARGET MIDNIGHT ADDRESS
           </label>
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">

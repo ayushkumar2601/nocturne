@@ -16,7 +16,7 @@ export function WalletScoreCard({
   score = 0,
   status = "[VERIFIED_SAFE]",
   exposureAmount = "$0",
-  address = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+  address = "mn_addr_preview1nkcdedpm4jqns2j9x6zmsz4hg7f8ryrw725hxxvm77tt6wg740xst609g4",
   report,
   onAuditClick,
 }: WalletScoreCardProps) {
