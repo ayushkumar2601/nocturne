@@ -226,6 +226,79 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 6. Engineered Like a Precision Instrument Section */}
+      <section className="bg-[#F5F5F5] px-6 py-24 border-t border-black/5">
+        <div className="max-w-[64rem] mx-auto text-center mb-16">
+          <div className="inline-flex items-center gap-2 bg-[#F0E6FF] text-[#8B5CF6] px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-6">
+            <span>✨</span> Developer Experience
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-6 text-[#1A1A1A]" style={{ letterSpacing: '-0.03em' }}>
+            Engineered Like a Precision Instrument
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Explore the exact commands to clone the monorepo, configure Claude Desktop MCP, and watch autonomous agent transaction drafting in action.
+          </p>
+        </div>
+
+        <div className="max-w-[64rem] mx-auto">
+          <div className="bg-[#1C1C1E] rounded-2xl overflow-hidden shadow-2xl">
+            {/* Mac Window Header / Tabs */}
+            <div className="bg-[#212124] px-4 py-4 flex flex-col md:flex-row items-start md:items-center justify-between border-b border-white/5 gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+                <div className="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+                <div className="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+              </div>
+              
+              <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto md:absolute md:left-1/2 md:-translate-x-1/2">
+                <button className="flex items-center gap-2 bg-[#6E56CF] text-white px-4 py-1.5 rounded-md text-xs font-mono">
+                  <span>&gt;_</span> Terminal Setup
+                </button>
+                <button className="flex items-center gap-2 text-white/50 hover:text-white px-4 py-1.5 rounded-md text-xs font-mono transition-colors">
+                  <span>📄</span> claude_desktop_config.json
+                </button>
+                <button className="flex items-center gap-2 text-white/50 hover:text-white px-4 py-1.5 rounded-md text-xs font-mono transition-colors">
+                  <span>▷</span> AI Agent Session
+                </button>
+              </div>
+
+              <button className="hidden md:flex items-center gap-2 text-white/50 hover:text-white border border-white/10 rounded-md px-3 py-1.5 text-xs font-mono transition-colors">
+                Copy Snippet
+              </button>
+            </div>
+            
+            {/* Terminal Content */}
+            <div className="p-8 font-mono text-sm leading-relaxed overflow-x-auto">
+              <div className="text-gray-500 mb-2"># 1. Clone the Nocturne zero-trust repository</div>
+              <div className="flex gap-2 mb-2">
+                <span className="text-[#00E676]">$</span>
+                <span className="text-white">git clone <span className="text-[#00E676]">https://github.com/ayushkumar2601/nocturne.git</span></span>
+              </div>
+              <div className="flex gap-2 mb-8">
+                <span className="text-[#00E676]">$</span>
+                <span className="text-white">cd nocturne</span>
+              </div>
+
+              <div className="text-gray-500 mb-2"># 2. Install workspace monorepo dependencies</div>
+              <div className="flex gap-2 mb-8">
+                <span className="text-[#00E676]">$</span>
+                <span className="text-white">pnpm install</span>
+              </div>
+
+              <div className="text-gray-500 mb-2"># 3. Launch local Nocturne Signing Console & Core Backend</div>
+              <div className="flex gap-2 mb-8">
+                <span className="text-[#00E676]">$</span>
+                <span className="text-white">pnpm dev</span>
+              </div>
+
+              <div className="text-[#00E676]">
+                • Nocturne Signing Console live at http://localhost:3002
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
