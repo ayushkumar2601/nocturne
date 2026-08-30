@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/ayushkumar2601/nocturne/assets/placeholder_banner.png" alt="Midnight Guardian Banner" width="100%">
+  <img src="./public/landing1.png" alt="Midnight Guardian Banner" width="100%">
 
   <h1>Midnight Guardian 🌌</h1>
   <p><strong>Deterministic Pre-Sign Verification & AI Security Copilot for the Midnight Network.</strong></p>
@@ -24,6 +24,37 @@ Before a user ever clicks "Sign", Midnight Guardian:
 3. **Traverses a multi-hop Neo4j threat graph** to detect phishing, proxy masking, and unlimited approval heuristics.
 
 > **Hackathon Track Integration:** Midnight is not just an add-on; it is the absolute core of our architecture. We utilize Midnight's privacy-preserving capabilities and the Compact compiler to run private, secure, and zero-knowledge simulations of smart contracts prior to network propagation.
+
+---
+
+## 📸 Platform Showcase
+
+Midnight Guardian features a stunning, hardware-accelerated dark-mode interface designed for absolute clarity during security audits.
+
+### The Security Dashboard & Wallet Scanner
+<p align="center">
+  <img src="./public/securitydashboard.png" width="48%" alt="Security Dashboard">
+  <img src="./public/walletscanner.png" width="48%" alt="Wallet Scanner">
+</p>
+
+### Claude Desktop Integration (MCP)
+<p align="center">
+  <img src="./public/copilot.png" width="32%" alt="Claude Integration">
+  <img src="./public/midnightclaude.png" width="32%" alt="Midnight Network Analysis">
+  <img src="./public/ethclaude.png" width="32%" alt="Ethereum Analysis">
+</p>
+
+### Call Data & Policy Enforcement
+<p align="center">
+  <img src="./public/calldatapolicy.png" width="100%" alt="Call Data Policy Sandbox">
+</p>
+
+### Landing Experience
+<p align="center">
+  <img src="./public/landing2.png" width="32%" alt="Landing Page Features">
+  <img src="./public/landing3.png" width="32%" alt="Midnight Specifics">
+  <img src="./public/landing4.png" width="32%" alt="Integration Details">
+</p>
 
 ---
 
