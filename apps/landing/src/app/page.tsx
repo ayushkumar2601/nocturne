@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
 const LogoIcon = () => (
@@ -8,6 +9,8 @@ const LogoIcon = () => (
 );
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<'terminal' | 'config' | 'agent'>('terminal');
+
   return (
     <div className="flex flex-col bg-[#F5F5F5] min-h-screen">
       {/* 1. Navbar + 2. Hero */}
@@ -252,13 +255,22 @@ export default function Home() {
               </div>
               
               <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto md:absolute md:left-1/2 md:-translate-x-1/2">
-                <button className="flex items-center gap-2 bg-[#6E56CF] text-white px-4 py-1.5 rounded-md text-xs font-mono">
+                <button 
+                  onClick={() => setActiveTab('terminal')}
+                  className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-mono transition-colors ${activeTab === 'terminal' ? 'bg-[#6E56CF] text-white' : 'text-white/50 hover:text-white'}`}
+                >
                   <span>&gt;_</span> Terminal Setup
                 </button>
-                <button className="flex items-center gap-2 text-white/50 hover:text-white px-4 py-1.5 rounded-md text-xs font-mono transition-colors">
+                <button 
+                  onClick={() => setActiveTab('config')}
+                  className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-mono transition-colors ${activeTab === 'config' ? 'bg-[#6E56CF] text-white' : 'text-white/50 hover:text-white'}`}
+                >
                   <span>📄</span> claude_desktop_config.json
                 </button>
-                <button className="flex items-center gap-2 text-white/50 hover:text-white px-4 py-1.5 rounded-md text-xs font-mono transition-colors">
+                <button 
+                  onClick={() => setActiveTab('agent')}
+                  className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-mono transition-colors ${activeTab === 'agent' ? 'bg-[#6E56CF] text-white' : 'text-white/50 hover:text-white'}`}
+                >
                   <span>▷</span> AI Agent Session
                 </button>
               </div>
@@ -269,32 +281,75 @@ export default function Home() {
             </div>
             
             {/* Terminal Content */}
-            <div className="p-8 font-mono text-sm leading-relaxed overflow-x-auto">
-              <div className="text-gray-500 mb-2"># 1. Clone the Nocturne zero-trust repository</div>
-              <div className="flex gap-2 mb-2">
-                <span className="text-[#00E676]">$</span>
-                <span className="text-white">git clone <span className="text-[#00E676]">https://github.com/ayushkumar2601/nocturne.git</span></span>
-              </div>
-              <div className="flex gap-2 mb-8">
-                <span className="text-[#00E676]">$</span>
-                <span className="text-white">cd nocturne</span>
-              </div>
+            <div className="p-8 font-mono text-sm leading-relaxed overflow-x-auto min-h-[320px]">
+              {activeTab === 'terminal' && (
+                <>
+                  <div className="text-gray-500 mb-2"># 1. Clone the Nocturne zero-trust repository</div>
+                  <div className="flex gap-2 mb-2">
+                    <span className="text-[#00E676]">$</span>
+                    <span className="text-white">git clone <span className="text-[#00E676]">https://github.com/ayushkumar2601/nocturne.git</span></span>
+                  </div>
+                  <div className="flex gap-2 mb-8">
+                    <span className="text-[#00E676]">$</span>
+                    <span className="text-white">cd nocturne</span>
+                  </div>
 
-              <div className="text-gray-500 mb-2"># 2. Install workspace monorepo dependencies</div>
-              <div className="flex gap-2 mb-8">
-                <span className="text-[#00E676]">$</span>
-                <span className="text-white">pnpm install</span>
-              </div>
+                  <div className="text-gray-500 mb-2"># 2. Install workspace monorepo dependencies</div>
+                  <div className="flex gap-2 mb-8">
+                    <span className="text-[#00E676]">$</span>
+                    <span className="text-white">pnpm install</span>
+                  </div>
 
-              <div className="text-gray-500 mb-2"># 3. Launch local Nocturne Signing Console & Core Backend</div>
-              <div className="flex gap-2 mb-8">
-                <span className="text-[#00E676]">$</span>
-                <span className="text-white">pnpm dev</span>
-              </div>
+                  <div className="text-gray-500 mb-2"># 3. Launch local Nocturne Signing Console & Core Backend</div>
+                  <div className="flex gap-2 mb-8">
+                    <span className="text-[#00E676]">$</span>
+                    <span className="text-white">pnpm dev</span>
+                  </div>
 
-              <div className="text-[#00E676]">
-                • Nocturne Signing Console live at http://localhost:3002
-              </div>
+                  <div className="text-[#00E676]">
+                    • Nocturne Signing Console live at http://localhost:3002
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'config' && (
+                <div className="text-[#A8B2C1]">
+<pre><code><span className="text-[#E06C75]">{"{"}</span>
+  <span className="text-[#98C379]">"mcpServers"</span><span className="text-[#E06C75]">:</span> <span className="text-[#E06C75]">{"{"}</span>
+    <span className="text-[#98C379]">"nocturne"</span><span className="text-[#E06C75]">:</span> <span className="text-[#E06C75]">{"{"}</span>
+      <span className="text-[#98C379]">"command"</span><span className="text-[#E06C75]">:</span> <span className="text-[#98C379]">"node"</span><span className="text-white">,</span>
+      <span className="text-[#98C379]">"args"</span><span className="text-[#E06C75]">:</span> <span className="text-white">[</span>
+        <span className="text-[#98C379]">"/absolute/path/to/nocturne/apps/mcp-server/dist/index.js"</span>
+      <span className="text-white">]</span><span className="text-white">,</span>
+      <span className="text-[#98C379]">"env"</span><span className="text-[#E06C75]">:</span> <span className="text-[#E06C75]">{"{"}</span>
+        <span className="text-[#98C379]">"DATABASE_URL"</span><span className="text-[#E06C75]">:</span> <span className="text-[#98C379]">"postgresql://weth:weth_pass@localhost:5432/weth_db?schema=public"</span>
+      <span className="text-[#E06C75]">{"}"}</span>
+    <span className="text-[#E06C75]">{"}"}</span>
+  <span className="text-[#E06C75]">{"}"}</span>
+<span className="text-[#E06C75]">{"}"}</span></code></pre>
+                </div>
+              )}
+
+              {activeTab === 'agent' && (
+                <div className="text-[#A8B2C1]">
+                  <div className="mb-4"><span className="text-[#C678DD] font-bold">&gt;</span><span className="text-white">Prompting Claude: "Deploy a shielded risk profile contract to Midnight Preview Testnet"</span></div>
+                  
+                  <div className="mb-2"><span className="text-[#61AFEF]">[MCP Client]</span> Executing tool: <span className="text-[#98C379]">deploy_shielded_contract</span>(<span className="text-[#E06C75]">{"{"}</span> address: <span className="text-[#98C379]">"mn_addr_..."</span> <span className="text-[#E06C75]">{"}"}</span>)</div>
+                  
+                  <div className="mb-6"><span className="text-[#00E676]">[Nocturne Core]</span> Returned: <span className="text-[#E06C75]">{"{"}</span> status: <span className="text-[#98C379]">"COMPILED"</span>, payload_size: <span className="text-[#98C379]">"45KB"</span> <span className="text-[#E06C75]">{"}"}</span></div>
+                  
+                  <div className="mb-2"><span className="text-[#61AFEF]">[MCP Client]</span> Executing tool: <span className="text-[#98C379]">simulate_transaction</span>(<span className="text-[#E06C75]">{"{"}</span> ... <span className="text-[#E06C75]">{"}"}</span>)</div>
+                  
+                  <div className="mb-6"><span className="text-[#00E676]">[Nocturne Core]</span> Simulation SUCCESS. Fee Estimated: <span className="text-[#D19A66]">1.05 tMID</span></div>
+                  
+                  <div className="mb-4"><span className="text-[#61AFEF]">[MCP Client]</span> Executing tool: <span className="text-[#98C379]">create_transaction_draft</span>(...)</div>
+                  
+                  <div className="bg-[#2B1B4D] border border-[#6E56CF] rounded p-4 text-white">
+                    <div className="font-bold mb-1">[Nocturne Core] STAGED DRAFT #9011 -&gt; STATUS: PENDING_APPROVAL (Quarantine Active)</div>
+                    <div className="text-white/70 text-xs">Action Required: Open http://localhost:3002/signing to inspect payload and sign with Lace.</div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
