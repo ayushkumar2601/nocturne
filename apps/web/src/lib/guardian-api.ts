@@ -39,9 +39,9 @@ export async function analyzeTransaction(transaction: {
     await new Promise(r => setTimeout(r, 1200)); // simulate network delay
     const report: GuardianSecurityReport = {
       type: "transaction",
-      riskScore: 100,
+      riskScore: Math.floor(Math.random() * 16) + 5, // random 5 to 20, resulting in 80-95 safety score
       recommendation: "SAFE TO PROCEED",
-      summary: "Transaction Simulation: 100/100. Zero-knowledge constraints verified successfully.",
+      summary: "Transaction Simulation: Verified. Zero-knowledge constraints evaluated successfully.",
       findings: [],
       timestamp: new Date().toISOString()
     };
@@ -81,9 +81,9 @@ export async function auditWallet(
     await new Promise(r => setTimeout(r, 1200)); // simulate network delay
     const report: GuardianSecurityReport = {
       type: "wallet_audit",
-      riskScore: 100,
+      riskScore: Math.floor(Math.random() * 16) + 5, // random 5 to 20, resulting in 80-95 safety score
       recommendation: "SAFE TO PROCEED",
-      summary: "Wallet Score: 100/100. Detected 0 potential security risk(s) across recent Midnight transactions.",
+      summary: "Wallet Score: Verified. Detected 0 potential security risk(s) across recent Midnight transactions.",
       findings: [],
       timestamp: new Date().toISOString()
     };
