@@ -33,9 +33,9 @@ export default function Home() {
               ))}
             </div>
 
-            <button className="bg-black text-white text-base font-medium px-7 py-2.5 rounded-full hover:bg-gray-800 transition-colors duration-200">
-              Open Wallet
-            </button>
+            <a href="https://youtu.be/Yiv-P4Iors0" target="_blank" rel="noopener noreferrer" className="bg-black text-white text-base font-medium px-7 py-2.5 rounded-full hover:bg-gray-800 transition-colors duration-200">
+              Watch Demo
+            </a>
           </div>
         </nav>
 
@@ -60,12 +60,12 @@ export default function Home() {
                 An automated, reward-powered digital currency built for the <strong className="font-semibold text-black/90">Midnight and Ethereum</strong> ecosystems, enabling native passive earnings and effortless connection into DeFi.
               </p>
               
-              <button className="inline-flex items-center gap-3 bg-black text-white text-base md:text-lg font-medium pl-8 pr-2 py-2 rounded-full hover:bg-gray-800 transition-colors duration-200">
-                Join us
+              <a href="https://youtu.be/Yiv-P4Iors0" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-black text-white text-base md:text-lg font-medium pl-8 pr-2 py-2 rounded-full hover:bg-gray-800 transition-colors duration-200">
+                Watch Demo
                 <span className="bg-white rounded-full p-2">
                   <ArrowRight className="w-5 h-5 text-black" />
                 </span>
-              </button>
+              </a>
 
 
             </div>

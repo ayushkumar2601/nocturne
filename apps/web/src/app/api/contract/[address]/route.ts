@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { address: string } }
+  { params }: { params: Promise<{ address: string }> }
 ) {
-  // Extract the contract address from the URL
-  const contractAddress = params.address;
+  const resolvedParams = await params;
+  const contractAddress = resolvedParams.address;
 
   // Serve the verified Midnight contract metadata JSON payload
   const verifiedMetadata = {
